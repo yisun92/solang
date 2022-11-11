@@ -17,6 +17,7 @@ use num_traits::ToPrimitive;
 use std::collections::HashMap;
 
 impl<'a> TargetRuntime<'a> for SolanaTarget {
+
     /// Solana does not use slot based-storage so override
     fn storage_delete(
         &self,

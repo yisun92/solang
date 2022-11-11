@@ -831,9 +831,10 @@ fn statement(
             Ok(reachable)
         }
         pt::Statement::Emit(loc, ty) => {
-            if let Ok(emit) = emit_event(loc, ty, context, symtable, ns, diagnostics) {
-                res.push(emit);
-            }
+            // Modified to ignore emit as it's only a logging function
+            // if let Ok(emit) = emit_event(loc, ty, context, symtable, ns, diagnostics) {
+            //     res.push(emit);
+            // }
 
             Ok(true)
         }

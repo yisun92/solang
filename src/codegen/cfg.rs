@@ -186,6 +186,8 @@ pub enum Instr {
     },
     /// Return a code at the end of a function
     ReturnCode { code: ReturnCode },
+    // The following are added for Olive only
+
 }
 
 /// This struct defined the return codes that we send to the execution environment when we return

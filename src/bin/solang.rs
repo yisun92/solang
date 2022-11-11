@@ -64,14 +64,14 @@ fn main() {
                             .short('O')
                             .num_args(1)
                             .value_parser(["none", "less", "default", "aggressive"])
-                            .default_value("default"),
+                            .default_value("none"),
                     )
                     .arg(
                         Arg::new("TARGET")
                             .help("Target to build for [possible values: solana, substrate]")
                             .long("target")
                             .num_args(1)
-                            .value_parser(["solana", "substrate", "evm"])
+                            .value_parser(["solana", "substrate", "evm", "olive"])
                             .hide_possible_values(true)
                             .required(true),
                     )
@@ -148,21 +148,21 @@ fn main() {
                         Arg::new("DEADSTORAGE")
                             .help("Disable dead storage codegen optimization")
                             .long("no-dead-storage")
-                            .action(ArgAction::SetFalse)
+                            .action(ArgAction::SetTrue)
                             .display_order(3),
                     )
                     .arg(
                         Arg::new("VECTORTOSLICE")
                             .help("Disable vector to slice codegen optimization")
                             .long("no-vector-to-slice")
-                            .action(ArgAction::SetFalse)
+                            .action(ArgAction::SetTrue)
                             .display_order(4),
                     )
                     .arg(
                         Arg::new("COMMONSUBEXPRESSIONELIMINATION")
                             .help("Disable common subexpression elimination")
                             .long("no-cse")
-                            .action(ArgAction::SetFalse)
+                            .action(ArgAction::SetTrue)
                             .display_order(5),
                     )
                     .arg(
@@ -806,6 +806,7 @@ fn target_arg(matches: &ArgMatches) -> Target {
             value_length: *value_length as usize,
         },
         "evm" => solang::Target::EVM,
+        "olive" => solang::Target::Olive,
         _ => unreachable!(),
     };
 

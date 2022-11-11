@@ -12,6 +12,7 @@ use std::collections::HashMap;
 
 use crate::codegen::cfg::ReturnCode;
 use crate::emit::substrate;
+use crate::emit::olive;
 use crate::emit::{solana, BinaryOp, Generate};
 use crate::linker::link;
 use crate::Target;
@@ -72,6 +73,16 @@ impl<'a> Binary<'a> {
         let std_lib = load_stdlib(context, &ns.target);
         match ns.target {
             Target::Substrate { .. } => substrate::SubstrateTarget::build(
+                context,
+                &std_lib,
+                contract,
+                ns,
+                filename,
+                opt,
+                math_overflow_check,
+                generate_debug_info,
+            ),
+            Target::Olive => olive::OliveTarget::build(
                 context,
                 &std_lib,
                 contract,
@@ -1146,6 +1157,22 @@ fn load_stdlib<'a>(context: &'a Context, target: &Target) -> Module<'a> {
             .link_in_module(Module::parse_bitcode_from_buffer(&memory, context).unwrap())
             .unwrap();
     }
+
+    if let Target::Olive = *target {
+        let memory = MemoryBuffer::create_from_memory_range(SUBSTRATE_IR, "substrate");
+
+        module
+            .link_in_module(Module::parse_bitcode_from_buffer(&memory, context).unwrap())
+            .unwrap();
+
+        // substrate does not provide ripemd160
+        let memory = MemoryBuffer::create_from_memory_range(RIPEMD160_IR, "ripemd160");
+
+        module
+            .link_in_module(Module::parse_bitcode_from_buffer(&memory, context).unwrap())
+            .unwrap();
+    }
+
 
     module
 }

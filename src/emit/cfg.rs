@@ -134,7 +134,7 @@ pub(super) fn emit_cfg<'a, T: TargetRuntime<'a> + ?Sized>(
                     *no,
                     Variable {
                         value: bin
-                            .llvm_type(&ns.storage_type(), ns)
+                            .llvm_type(&ns.storage_type(), ns) // Uint(32) if Solana else Uint(256)
                             .into_int_type()
                             .const_zero()
                             .into(),

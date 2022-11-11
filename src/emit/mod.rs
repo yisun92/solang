@@ -25,6 +25,7 @@ pub mod solana;
 mod storage;
 mod strings;
 pub mod substrate;
+pub mod olive;
 
 use crate::codegen::cfg::HashTy;
 use crate::emit::binary::Binary;
@@ -57,6 +58,7 @@ impl fmt::Display for BinaryOp {
 }
 
 pub trait TargetRuntime<'a> {
+
     fn abi_decode<'b>(
         &self,
         bin: &Binary<'b>,

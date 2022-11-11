@@ -34,6 +34,8 @@ pub enum Target {
     },
     /// Ethereum EVM, see <https://ethereum.org/en/developers/docs/evm/>
     EVM,
+    /// Olive, target for Olive to lift FSM
+    Olive,
 }
 
 impl fmt::Display for Target {
@@ -42,6 +44,7 @@ impl fmt::Display for Target {
             Target::Solana => write!(f, "solana"),
             Target::Substrate { .. } => write!(f, "substrate"),
             Target::EVM => write!(f, "evm"),
+            Target::Olive => write!(f, "olive"),
         }
     }
 }
@@ -54,6 +57,7 @@ impl PartialEq for Target {
             Target::Solana => matches!(other, Target::Solana),
             Target::Substrate { .. } => matches!(other, Target::Substrate { .. }),
             Target::EVM => matches!(other, Target::EVM),
+            Target::Olive => matches!(other, Target::Olive),
         }
     }
 }
@@ -63,6 +67,11 @@ impl Target {
     pub fn is_substrate(&self) -> bool {
         matches!(self, Target::Substrate { .. })
     }
+
+    /// Short-hand for checking for Olive target
+    pub fn is_olive(&self) -> bool {
+        matches!(self, Target::Olive)
+    } // TODO change target later
 
     /// Create the target Substrate with default parameters
     pub const fn default_substrate() -> Self {
@@ -78,6 +87,7 @@ impl Target {
             "solana" => Some(Target::Solana),
             "substrate" => Some(Target::default_substrate()),
             "evm" => Some(Target::EVM),
+            "olive" => Some(Target::default_substrate()),  // TODO change target later
             _ => None,
         }
     }

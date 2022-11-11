@@ -224,7 +224,7 @@ fn contract(contract_no: usize, ns: &mut Namespace, opt: &Options) {
         }
 
         // Generate cfg for storage initializers
-        let cfg = storage_initializer(contract_no, ns, opt);
+        let cfg = storage_initializer(contract_no, ns, opt);  // TODO: Is here the place to handle global variable declarations
         let pos = all_cfg.len();
         all_cfg.push(cfg);
         ns.contracts[contract_no].initializer = Some(pos);
@@ -261,6 +261,7 @@ fn contract(contract_no: usize, ns: &mut Namespace, opt: &Options) {
     }
 }
 
+
 /// This function will set all contract storage initializers and should be called from the constructor
 fn storage_initializer(contract_no: usize, ns: &mut Namespace, opt: &Options) -> ControlFlowGraph {
     // note the single `:` to prevent a name clash with user-declared functions
@@ -289,7 +290,7 @@ fn storage_initializer(contract_no: usize, ns: &mut Namespace, opt: &Options) ->
                 Instr::SetStorage {
                     value,
                     ty: var.ty.clone(),
-                    storage,
+                    storage,  // A NumberLiteral of the storage slot
                 },
             );
         }

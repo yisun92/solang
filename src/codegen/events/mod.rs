@@ -35,7 +35,7 @@ pub(super) fn new_event_emitter<'a>(
     ns: &'a Namespace,
 ) -> Box<dyn EventEmitter + 'a> {
     match ns.target {
-        Target::Substrate { .. } | Target::EVM => {
+        Target::Substrate { .. } | Target::EVM | Target::Olive => {
             Box::new(SubstrateEventEmitter { args, ns, event_no })
         }
 

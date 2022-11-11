@@ -2,18 +2,17 @@
 
 use crate::emit::binary::Binary;
 use crate::emit::storage::StorageSlot;
-use crate::emit::substrate::SubstrateTarget;
+use crate::emit::olive::OliveTarget;
 use crate::emit::TargetRuntime;
 use crate::emit_context;
 use crate::sema::ast::{ArrayLength, Namespace, Type};
 use inkwell::types::BasicType;
-use inkwell::values::{ArrayValue, BasicValueEnum, FunctionValue, IntValue, PointerValue, AnyValue};
+use inkwell::values::{ArrayValue, BasicValueEnum, FunctionValue, IntValue, PointerValue};
 use inkwell::{AddressSpace, IntPredicate};
-use inkwell::module::{Linkage, Module};
 use num_bigint::BigInt;
 use num_traits::{One, ToPrimitive};
 
-impl StorageSlot for SubstrateTarget {
+impl StorageSlot for OliveTarget {
     fn set_storage(&self, binary: &Binary, slot: PointerValue, dest: PointerValue) {
         emit_context!(binary);
 
@@ -227,7 +226,6 @@ impl StorageSlot for SubstrateTarget {
                             } else {
                                 entry
                             };
-
                             bin.builder.build_store(elem, entry);
                         },
                     );
@@ -293,6 +291,7 @@ impl StorageSlot for SubstrateTarget {
                 ret.into()
             }
             Type::InternalFunction { .. } => {
+
                 bin.builder.build_store(slot_ptr, *slot);
 
                 let ptr_ty = bin
