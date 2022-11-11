@@ -912,6 +912,94 @@ pub fn is_reserved(fname: &str) -> bool {
 }
 
 /// Resolve a builtin call
+pub fn resolve_revert_call(
+    loc: &pt::Loc,
+    namespace: Option<&str>,
+    id: &str,
+    args: &[pt::Expression],
+    context: &ExprContext,
+    ns: &mut Namespace,
+    symtable: &mut Symtable,
+    diagnostics: &mut Diagnostics,
+) -> Result<Expression, ()> {
+    let funcs = BUILTIN_FUNCTIONS
+        .iter()
+        .filter(|p| p.name == id && p.namespace == namespace && p.method.is_none())
+        .collect::<Vec<&Prototype>>();
+    let mut errors: Diagnostics = Diagnostics::default();
+
+    for func in &funcs {
+        let mut matches = true;
+
+        if context.constant && !func.constant {
+            errors.push(Diagnostic::cast_error(
+                *loc,
+                format!(
+                    "cannot call function '{}' in constant expression",
+                    func.name
+                ),
+            ));
+            matches = false;
+        }
+
+        if func.params.len() != args.len() {
+            errors.push(Diagnostic::cast_error(
+                *loc,
+                format!(
+                    "builtin function '{}' expects {} arguments, {} provided",
+                    func.name,
+                    func.params.len(),
+                    args.len()
+                ),
+            ));
+            matches = false;
+        }
+
+        let mut cast_args = Vec::new();
+
+        // remove args so it's always revert()
+
+        if !matches {
+            if funcs.len() > 1 && diagnostics.extend_non_casting(&errors) {
+                return Err(());
+            }
+        } else {
+            // tx.gasprice(1) is a bad idea, just like tx.gasprice. Warn about this
+            if ns.target.is_substrate() && func.builtin == Builtin::Gasprice {
+                if let Ok((_, val)) = eval_const_number(&cast_args[0], ns) {
+                    if val == BigInt::one() {
+                        diagnostics.push(Diagnostic::warning(
+                            *loc,
+                            String::from(
+                                "the function call 'tx.gasprice(1)' may round down to zero. See https://solang.readthedocs.io/en/latest/language/builtins.html#gasprice",
+                            ),
+                        ));
+                    }
+                }
+            }
+
+            return Ok(Expression::Builtin(
+                *loc,
+                func.ret.to_vec(),
+                func.builtin,
+                cast_args,
+            ));
+        }
+    }
+
+    if funcs.len() != 1 {
+        diagnostics.push(Diagnostic::error(
+            *loc,
+            "cannot find overloaded function which matches signature".to_string(),
+        ));
+    } else {
+        diagnostics.extend(errors);
+    }
+
+    Err(())
+}
+
+/// Resolve a builtin call
 pub fn resolve_call(
     loc: &pt::Loc,
     namespace: Option<&str>,
