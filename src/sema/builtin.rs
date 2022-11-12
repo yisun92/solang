@@ -911,7 +911,7 @@ pub fn is_reserved(fname: &str) -> bool {
     })
 }
 
-/// Resolve a builtin call
+/// Resolve a builtin revert call
 pub fn resolve_revert_call(
     loc: &pt::Loc,
     namespace: Option<&str>,

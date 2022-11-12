@@ -867,14 +867,6 @@ fn statement(
             Ok(resolved_asm.1)
         }
         pt::Statement::Revert(loc, error, args) => {
-            // if let Some(error) = error {
-            //     ns.diagnostics.push(Diagnostic::error(
-            //         error.loc,
-            //         format!("revert with custom error '{}' not supported yet", error),
-            //     ));
-            //     return Err(());
-            // }
-
             let id = pt::Identifier {
                 loc: pt::Loc::File(loc.file_no(), loc.start(), loc.start() + 6),
                 name: "revert".to_string(),

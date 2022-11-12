@@ -1121,6 +1121,9 @@ fn require(
             }
             cfg.add(vartab, Instr::AssertFailure { expr: None });
         }
+        Target::Olive => {
+            cfg.add(vartab, Instr::AssertFailure { expr: None });
+        }
         _ => cfg.add(vartab, Instr::AssertFailure { expr }),
     }
     cfg.set_basic_block(true_);
